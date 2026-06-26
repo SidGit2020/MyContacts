@@ -1,0 +1,48 @@
+## .NET / ASP.NET Core
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+Properties/launchSettings.json
+
+## SQLite database (runtime artifact)
+*.db
+*.db-shm
+*.db-wal
+
+## NuGet
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+
+## Publish output
+publish/
+**/publish/
+
+## Rider / JetBrains
+.idea/
+*.sln.iml
+
+## OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+## Logs
+*.log
+logs/
+
+## Environment / secrets
+.env
+.env.*
+appsettings.*.json
+!appsettings.json
+!appsettings.Development.json
+
+## BMad runtime scripts cache
+_bmad/__pycache__/
+_bmad/scripts/__pycache__/
