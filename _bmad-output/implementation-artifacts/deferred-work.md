@@ -2,7 +2,18 @@
 
 Items surfaced during review that are explicitly out of v1 scope.
 
-## For v2+
+## Docker (v2+)
+
+- Switch to non-root user in Dockerfile: `USER app` (base image provides it)
+- Add `HEALTHCHECK` instruction to Dockerfile
+- Pin base image tags to full patch version (e.g. `sdk:10.0.9`) for reproducible builds
+- Move connection string to `.env` file (gitignored) instead of inline in docker-compose.yml
+- Set `ASPNETCORE_ENVIRONMENT=Production` explicitly in docker-compose.yml
+- Bind port to `127.0.0.1:8080:8080` when behind a reverse proxy
+- Add `deploy.resources.limits` (memory/CPU) in docker-compose.yml
+- Add `--locked-mode` to `dotnet restore` and commit `packages.lock.json`
+
+## App (v2+)
 
 - Add `[MaxLength]` / `[StringLength]` on all Contact string fields
 - Add `[EmailAddress]` validation on Contact.Email

@@ -1,0 +1,13 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/contacts.db
+    volumes:
+      - mycontacts-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  mycontacts-data:

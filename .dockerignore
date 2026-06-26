@@ -1,0 +1,16 @@
+bin/
+obj/
+.git/
+.vs/
+.claude/
+_bmad/
+_bmad-output/
+*.db
+*.db-shm
+*.db-wal
+.gitignore
+Dockerfile
+docker-compose.yml
+appsettings.Development.json
+**/*.user
+**/Properties/launchSettings.json
