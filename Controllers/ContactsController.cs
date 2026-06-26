@@ -19,6 +19,7 @@ public class ContactsController : Controller
     {
         var contacts = _db.Contacts.ToList();
         return View(contacts);
+        //Test Git Update to remote
     }
 
     // GET: /Contacts/Create
