@@ -2,7 +2,15 @@
   "permissions": {
     "allow": [
       "Bash(uv run *)",
-      "PowerShell(git init *)"
+      "PowerShell(git init *)",
+      "Bash(python3 \"C:\\\\MyContacts\\\\_bmad\\\\scripts\\\\resolve_customization.py\" --skill \"C:\\\\MyContacts\\\\.claude\\\\skills\\\\bmad-market-research\" --key workflow)",
+      "WebSearch",
+      "Bash(python3 \"C:\\\\MyContacts\\\\_bmad\\\\scripts\\\\resolve_customization.py\" --skill \"C:\\\\MyContacts\\\\.claude\\\\skills\\\\bmad-domain-research\" --key workflow)",
+      "Bash(python3 *)",
+      "Bash(git *)",
+      "Bash(dotnet build *)",
+      "Bash(Test-Path *)",
+      "Bash(timeout 8 dotnet run)"
     ]
   }
 }

@@ -13,6 +13,13 @@ Items surfaced during review that are explicitly out of v1 scope.
 - Add `deploy.resources.limits` (memory/CPU) in docker-compose.yml
 - Add `--locked-mode` to `dotnet restore` and commit `packages.lock.json`
 
+## Code Review Findings — Story 1.1 (2026-06-29)
+
+- **Edit form silently zeroes DateOfBirth on save** — Story 1.2 MUST add `DateOfBirth` to Edit.cshtml (full-entity `Update()` in ContactsController.cs overwrites all fields including DateOfBirth with null when the form doesn't post it)
+- **Feb 29 birthday crashes Story 1.3 calculation** — `new DateTime(year, 2, 29)` throws `ArgumentOutOfRangeException` in non-leap years; Story 1.3 must handle explicitly (e.g., skip Feb 29 contacts or treat as Mar 1)
+- **EnsureCreated() no-op on existing databases** — pre-existing AD-3 constraint; any developer pulling this change must manually delete `contacts.db`
+- **No past-date validation on DateOfBirth** — future dates (e.g., 9999-12-31) are accepted; consider adding `[Range]` or custom validation in Story 1.2
+
 ## App (v2+)
 
 - Add `[MaxLength]` / `[StringLength]` on all Contact string fields
