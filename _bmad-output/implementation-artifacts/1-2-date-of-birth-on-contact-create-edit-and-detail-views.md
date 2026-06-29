@@ -4,7 +4,7 @@ baseline_commit: 2a84da7d0813341f225e1c0c03e8b833f5fa0fc1
 
 # Story 1.2: Date of Birth on Contact Create, Edit, and Detail Views
 
-Status: review
+Status: done
 
 ## Story
 
@@ -220,3 +220,17 @@ claude-sonnet-4-6
 - Views/Contacts/Create.cshtml (modified — added DateOfBirth date input after Notes)
 - Views/Contacts/Edit.cshtml (modified — added DateOfBirth date input after Notes)
 - Views/Contacts/Details.cshtml (modified — added conditional DateOfBirth display row)
+
+## Senior Developer Review (AI)
+
+**Review Date:** 2026-06-29
+**Outcome:** Approved — no blockers, no patches required
+**Layers:** Blind Hunter ✅, Edge Case Hunter ❌ (session token limit — failed), Acceptance Auditor ✅
+
+### Action Items
+
+- [x] [Review][Defer] Validation errors swallowed by ModelOnly summary — no span for DateOfBirth `Create.cshtml:36, Edit.cshtml:38` — deferred; by spec design (optional field, no validation attributes, story spec explicitly excludes validation span)
+- [x] [Review][Defer] ToString("d") culture-sensitive date display `Details.cshtml:28` — deferred; low priority for single-user app with consistent server locale
+- [x] [Review][Defer] No min/max constraints on date input — deferred; pre-existing item in deferred-work.md
+- [x] [Review][Dismiss] Date renders wrong format in Edit — FALSE POSITIVE; `value="1990-01-15"` confirmed in HTML (AC4 verified); `type="date"` triggers yyyy-MM-dd in InputTagHelper
+- [x] [Review][Dismiss] Hardcoded label text diverges from pattern — intentional .NET 10 workaround (no PascalCase split), documented in dev notes

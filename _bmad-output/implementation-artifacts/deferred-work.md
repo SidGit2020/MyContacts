@@ -20,6 +20,12 @@ Items surfaced during review that are explicitly out of v1 scope.
 - **EnsureCreated() no-op on existing databases** — pre-existing AD-3 constraint; any developer pulling this change must manually delete `contacts.db`
 - **No past-date validation on DateOfBirth** — future dates (e.g., 9999-12-31) are accepted; consider adding `[Range]` or custom validation in Story 1.2
 
+## Code Review Findings — Story 1.2 (2026-06-29)
+
+- **ModelOnly validation summary swallows property-level errors for DateOfBirth** — Create.cshtml and Edit.cshtml have no `<span asp-validation-for="DateOfBirth">`. Intentional per spec (optional field, no validation attributes). If future validation is added (e.g., `[Range]`), a validation span will be needed.
+- **ToString("d") date display is culture-sensitive** — Details.cshtml renders `@Model.DateOfBirth.Value.ToString("d")` which is locale-aware (e.g., `15-01-1990` on en-IN, `1/15/1990` on en-US). Consider `ToString("MMM d, yyyy")` or `ToString("yyyy-MM-dd")` for unambiguous display.
+- **No min/max constraints on DateOfBirth inputs** — Duplicate of Story 1.1 finding; future dates (year 9999) and past extremes (year 0001) are accepted client-side without feedback.
+
 ## App (v2+)
 
 - Add `[MaxLength]` / `[StringLength]` on all Contact string fields
