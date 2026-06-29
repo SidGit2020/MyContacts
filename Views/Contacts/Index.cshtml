@@ -2,9 +2,20 @@
 
 @{
     ViewData["Title"] = "Contacts";
+    var upcomingBirthdays = (List<(MyContacts.Models.Contact contact, int daysUntil)>)ViewBag.UpcomingBirthdays ?? new();
 }
 
 <h1>Contacts</h1>
+
+@if (upcomingBirthdays.Count > 0)
+{
+    <div class="alert alert-info" role="alert">
+        @foreach (var (contact, days) in upcomingBirthdays)
+        {
+            <div>🎂 @contact.Name's birthday @(days == 0 ? "is today!" : $"is in {days} day(s)")</div>
+        }
+    </div>
+}
 
 <p>
     <a asp-action="Create" class="btn btn-primary">Create New</a>

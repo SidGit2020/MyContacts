@@ -26,6 +26,12 @@ Items surfaced during review that are explicitly out of v1 scope.
 - **ToString("d") date display is culture-sensitive** — Details.cshtml renders `@Model.DateOfBirth.Value.ToString("d")` which is locale-aware (e.g., `15-01-1990` on en-IN, `1/15/1990` on en-US). Consider `ToString("MMM d, yyyy")` or `ToString("yyyy-MM-dd")` for unambiguous display.
 - **No min/max constraints on DateOfBirth inputs** — Duplicate of Story 1.1 finding; future dates (year 9999) and past extremes (year 0001) are accepted client-side without feedback.
 
+## Code Review Findings — Story 1.3 (2026-06-29)
+
+- **Feb 29 contacts receive no birthday reminder in non-leap years** — By design; `deferred-work.md` (Story 1.1 review) directed "skip Feb 29 contacts OR treat as Mar 1"; skip was chosen. Affects 75% of years. Future enhancement: show reminder on Feb 28 in non-leap years.
+- **Index.cshtml null-safety: `ViewBag.UpcomingBirthdays` has no null-coalescing guard** — `(List<...>)ViewBag.UpcomingBirthdays` cast returns null if any action renders the Index view without setting ViewBag; `.Count` would then throw NullReferenceException. Currently safe (only `Index()` renders this view and always sets the property), but a future refactor could silently break. Fix: `?? new()` on the cast line.
+- **`days >= 0` is dead code** — After `if (thisYear < today) thisYear = thisYear.AddYears(1);`, `days` is always ≥ 0; the lower bound check is unreachable. Harmless defensive code; can be removed for clarity.
+
 ## App (v2+)
 
 - Add `[MaxLength]` / `[StringLength]` on all Contact string fields

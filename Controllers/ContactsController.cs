@@ -18,6 +18,7 @@ public class ContactsController : Controller
     public IActionResult Index()
     {
         var contacts = _db.Contacts.ToList();
+        ViewBag.UpcomingBirthdays = GetUpcomingBirthdays(contacts);
         return View(contacts);
         //Test Git Update to remote
         //Test commit to Git 2
@@ -93,5 +94,39 @@ public class ContactsController : Controller
             _db.SaveChanges();
         }
         return RedirectToAction(nameof(Index));
+    }
+
+    private List<(Contact contact, int daysUntil)> GetUpcomingBirthdays(IEnumerable<Contact> contacts)
+    {
+        var today = DateTime.Today;
+        var result = new List<(Contact contact, int daysUntil)>();
+
+        foreach (var contact in contacts)
+        {
+            if (!contact.DateOfBirth.HasValue) continue;
+
+            var dob = contact.DateOfBirth.Value;
+
+            if (dob.Month == 2 && dob.Day == 29)
+            {
+                if (DateTime.IsLeapYear(today.Year))
+                {
+                    var leapBirthday = new DateTime(today.Year, 2, 29);
+                    var leapDays = (leapBirthday - today).Days;
+                    if (leapDays >= 0 && leapDays <= 6)
+                        result.Add((contact, leapDays));
+                }
+                continue;
+            }
+
+            var thisYear = new DateTime(today.Year, dob.Month, dob.Day);
+            if (thisYear < today) thisYear = thisYear.AddYears(1);
+            var days = (thisYear - today).Days;
+
+            if (days >= 0 && days <= 6)
+                result.Add((contact, days));
+        }
+
+        return result.OrderBy(x => x.daysUntil).ToList();
     }
 }

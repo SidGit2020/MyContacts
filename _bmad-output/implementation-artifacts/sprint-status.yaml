@@ -50,5 +50,5 @@ development_status:
   epic-1: in-progress
   1-1-add-dateofbirth-to-contact-model-and-database: done
   1-2-date-of-birth-on-contact-create-edit-and-detail-views: done
-  1-3-birthday-reminder-banner-on-contacts-list-page: backlog
+  1-3-birthday-reminder-banner-on-contacts-list-page: done
   epic-1-retrospective: optional
