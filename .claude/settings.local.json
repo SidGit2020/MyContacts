@@ -10,7 +10,14 @@
       "Bash(git *)",
       "Bash(dotnet build *)",
       "Bash(Test-Path *)",
-      "Bash(timeout 8 dotnet run)"
+      "Bash(timeout 8 dotnet run)",
+      "Bash(taskkill /F /PID 30840)",
+      "Bash(curl -s http://localhost:5244/Contacts/Create)",
+      "Bash(curl -s http://localhost:5244/Contacts/Edit/1)",
+      "Bash(curl -s -X POST http://localhost:5244/Contacts/Create -H 'Content-Type: application/x-www-form-urlencoded' -d 'Name=Test+Birthday&DateOfBirth=1990-01-15&__RequestVerificationToken=SKIP')",
+      "Bash(sqlite3 contacts.db \"INSERT INTO Contacts \\(Name, Phone, Email, Address, Notes, DateOfBirth\\) VALUES \\('Alice Smith', '555-1234', 'alice@test.com', '123 Main St', 'Test contact', '1990-01-15'\\);\")",
+      "Bash(echo \"Insert result: $?\")",
+      "Bash(sqlite3 contacts.db \"SELECT Id, Name, DateOfBirth FROM Contacts;\")"
     ]
   }
 }
