@@ -54,5 +54,5 @@ development_status:
   epic-1-retrospective: optional
   epic-2: in-progress
   2-1-add-category-to-contact-model-and-database: review
-  2-2-category-dropdown-on-contact-create-edit-and-detail-views: backlog
+  2-2-category-dropdown-on-contact-create-edit-and-detail-views: ready-for-dev
   2-3-category-column-and-filter-on-contacts-list: backlog
