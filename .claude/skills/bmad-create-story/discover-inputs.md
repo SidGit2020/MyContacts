@@ -38,6 +38,26 @@ Load a specific shard using a template variable. Example: used for epics with `{
 4. Load that specific file.
 5. Store in variable: `{pattern_name_content}`.
 
+#### REFERENCE_ONLY Strategy
+
+Record file paths without loading any content. Use for large reference documents (architecture, PRD, domain/market research) that the story should cite by path rather than embed in LLM context during story creation.
+
+1. Use the glob pattern to find ALL matching `.md` files.
+2. Record all found file paths as a list in variable `{pattern_name_paths}` (e.g., `{architecture_paths}`).
+3. Do NOT read or load any file content.
+4. Mark the pattern as **RESOLVED** — the paths are available for the story's Referenced Documents section.
+
+#### SECTION_INDEX Strategy
+
+Extract only the heading lines from each matched file using a shell command, producing a lightweight section map (headings + line numbers) without loading any body content. Use this for large planning documents (architecture, PRD, research) so that the story can cite specific sections by line number rather than loading whole files.
+
+1. Use the glob pattern to find ALL matching `.md` files.
+2. For each found file, run: `grep -n "^#" "<file_path>"` to extract only heading lines with their line numbers.
+3. Store results in `{pattern_name_index}`: a mapping of `file_path → [(line_num, heading_text)]` entries.
+4. Also store the raw file paths in `{pattern_name_paths}` for reference.
+5. Do NOT read or load any file body content — only the heading lines returned by grep are in context.
+6. Mark the pattern as **RESOLVED** — the section index is available for targeted section-reference generation in step 3.
+
 #### INDEX_GUIDED Strategy
 
 Load index.md, analyze the structure and description of each doc in the index, then intelligently load relevant docs.

@@ -58,6 +58,10 @@ NFR-4: Epic 1 (Story 1.3) — Efficient LINQ query; no noticeable page load dela
 SIDDI can record a Date of Birth for any contact and see an automatic birthday reminder banner on the Contacts List page whenever a birthday is coming up within the next 7 days.
 **FRs covered:** FR-1, FR-2
 
+### Epic 2: Contact Categories
+SIDDI can classify each contact into a category (Family, Colleague, Friends, Close Friends, Childhood Friends), replacing the free-text Notes field with a structured dropdown, and can filter the Contacts List by category.
+**FRs covered:** FR-3, FR-4
+
 ## Epic 1: Birthday Reminders
 
 SIDDI can record a Date of Birth for any contact and see an automatic birthday reminder banner on the Contacts List page whenever a birthday is coming up within the next 7 days.
@@ -145,3 +149,93 @@ So that I never miss wishing someone on their birthday.
 **Given** the 7-day window spans a year boundary (e.g., today is 28 Dec and a contact's birthday is 2 Jan)
 **When** the Contacts List page loads
 **Then** the contact appears in the banner correctly showing the number of days away
+
+---
+
+## Epic 2: Contact Categories
+
+SIDDI can classify each contact into a category (Family, Colleague, Friends, Close Friends, Childhood Friends), replacing the free-text Notes field with a structured dropdown, and can filter the Contacts List by category.
+
+### Story 2.1: Add Category to Contact Model and Database
+
+As the app owner (SIDDI),
+I want the Contact model and database to store a structured Category instead of free-text Notes,
+So that contacts are classified consistently and ready for group-based features.
+
+**Acceptance Criteria:**
+
+**Given** `Category` (`string?`) is added to the `Contact` class and `Notes` (`string?`) is removed
+**When** `contacts.db` is deleted and the app is restarted
+**Then** `EnsureCreated()` recreates the database with a `Category` column and no `Notes` column in the `Contacts` table
+
+**Given** the schema has been recreated
+**When** a Contact is saved with a `Category` value (e.g., "Family")
+**Then** the value is persisted and can be read back correctly
+
+**Given** the schema has been recreated
+**When** a Contact is saved with `Category` set to `null` (no category chosen)
+**Then** the record saves successfully with no validation error
+
+---
+
+### Story 2.2: Category Dropdown on Contact Create, Edit, and Detail Views
+
+As the app owner (SIDDI),
+I want to assign a category to a contact when creating or editing, and see it on the Detail page,
+So that I can classify contacts from day one and review their category at a glance.
+
+**Acceptance Criteria:**
+
+**Given** I navigate to the Create Contact page
+**When** the page loads
+**Then** a "Category" `<select>` dropdown is visible with a blank default option and the five options: Family, Colleague, Friends, Close Friends, Childhood Friends; the Notes textarea is gone
+
+**Given** I am on the Create Contact page
+**When** I choose a category and click Save
+**Then** the contact saves successfully and the chosen category is displayed on the Contact Detail page
+
+**Given** I am on the Create Contact page
+**When** I leave the Category dropdown on the blank default and click Save
+**Then** the contact saves successfully with no error and the Detail page shows no category value
+
+**Given** I am on the Edit Contact page for a contact with an existing Category
+**When** I change the category and click Save
+**Then** the new category is saved and displayed on the Detail page
+
+**Given** I am on the Edit Contact page for a contact with an existing Category
+**When** I reset the dropdown to the blank default and click Save
+**Then** the Category is stored as null and the Detail page shows no category
+
+**Given** the Notes field previously existed in Create and Edit views
+**When** I open either form after this story is implemented
+**Then** the Notes textarea is absent from both forms
+
+---
+
+### Story 2.3: Category Column and Filter on Contacts List
+
+As the app owner (SIDDI),
+I want to see each contact's category in the Contacts List and filter by category,
+So that I can quickly view all contacts in a specific group.
+
+**Acceptance Criteria:**
+
+**Given** contacts have categories assigned
+**When** the Contacts List page loads with no filter applied
+**Then** a "Category" column appears in the contacts table showing each contact's category (blank for uncategorised contacts)
+
+**Given** I select a category from the filter dropdown above the contacts table
+**When** the page reloads (or updates)
+**Then** only contacts belonging to the selected category are shown in the table
+
+**Given** I select the blank / "All" option from the filter dropdown
+**When** the page reloads
+**Then** all contacts are shown regardless of category
+
+**Given** no contacts have a category assigned
+**When** I apply a category filter
+**Then** an empty table body is shown (no error, no crash)
+
+**Given** the Notes column previously appeared in any list or detail view
+**When** I open the Contacts List after this story is implemented
+**Then** no Notes column or Notes data appears anywhere in the list

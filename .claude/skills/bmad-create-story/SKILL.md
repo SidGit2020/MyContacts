@@ -82,10 +82,12 @@ Activation is complete. If `activation_steps_prepend` or `activation_steps_appen
 
 | Input | Description | Path Pattern(s) | Load Strategy |
 |-------|-------------|------------------|---------------|
-| prd | PRD (fallback - epics file should have most content) | whole: `{planning_artifacts}/*prd*.md`, sharded: `{planning_artifacts}/*prd*/*.md` | SELECTIVE_LOAD |
-| architecture | Architecture (fallback - epics file should have relevant sections) | whole: `{planning_artifacts}/*architecture*.md`, sharded: `{planning_artifacts}/*architecture*/*.md` | SELECTIVE_LOAD |
-| ux | UX design (fallback - epics file should have relevant sections) | whole: `{planning_artifacts}/*ux*.md`, sharded: `{planning_artifacts}/*ux*/*.md` | SELECTIVE_LOAD |
-| epics | Enhanced epics+stories file with BDD and source hints | whole: `{planning_artifacts}/*epic*.md`, sharded: `{planning_artifacts}/*epic*/*.md` | SELECTIVE_LOAD |
+| prd | PRD — section-indexed only; epics holds synthesized content; specific PRD sections cited in story | whole: `{planning_artifacts}/*prd*.md`, sharded: `{planning_artifacts}/*prd*/*.md` | SECTION_INDEX |
+| architecture | Architecture — section-indexed only; specific sections cited in story for dev agent | whole: `{planning_artifacts}/*architecture*.md`, sharded: `{planning_artifacts}/*architecture*/*.md` | SECTION_INDEX |
+| ux | UX design — section-indexed only; specific sections cited in story for dev agent | whole: `{planning_artifacts}/*ux*.md`, sharded: `{planning_artifacts}/*ux*/*.md` | SECTION_INDEX |
+| epics | Enhanced epics+stories file with BDD and source hints — PRIMARY source, must be fully loaded | whole: `{planning_artifacts}/*epic*.md`, sharded: `{planning_artifacts}/*epic*/*.md` | SELECTIVE_LOAD |
+| domain_research | Domain research — section-indexed only; relevant technical sections cited in story | `{planning_artifacts}/research/*domain*.md` | SECTION_INDEX |
+| market_research | Market research — section-indexed only; relevant sections cited in story | `{planning_artifacts}/research/*market*.md` | SECTION_INDEX |
 
 ## Execution
 
@@ -286,29 +288,29 @@ Activation is complete. If `activation_steps_prepend` or `activation_steps_appen
   </check>
 </step>
 
-<step n="3" goal="Architecture analysis for developer guardrails">
-  <critical>🏗️ ARCHITECTURE INTELLIGENCE - Extract everything the developer MUST follow!</critical> **ARCHITECTURE DOCUMENT ANALYSIS:** <action>Systematically
-  analyze architecture content for story-relevant requirements:</action>
+<step n="3" goal="Build targeted section references from planning artifact heading indexes">
+  <critical>🏗️ TARGETED SECTION REFERENCES — Map story requirements to specific sections in planning documents so the dev agent knows exactly where to look</critical>
 
-  <!-- Load architecture - single file or sharded -->
-  <check if="architecture file is single file">
-    <action>Load complete {architecture_content}</action>
-  </check>
-  <check if="architecture is sharded to folder">
-    <action>Load architecture index and scan all architecture files</action>
-  </check> **CRITICAL ARCHITECTURE EXTRACTION:** <action>For
-  each architecture section, determine if relevant to this story:</action> - **Technical Stack:** Languages, frameworks, libraries with
-  versions - **Code Structure:** Folder organization, naming conventions, file patterns - **API Patterns:** Service structure, endpoint
-  patterns, data contracts - **Database Schemas:** Tables, relationships, constraints relevant to story - **Security Requirements:**
-  Authentication patterns, authorization rules - **Performance Requirements:** Caching strategies, optimization patterns - **Testing
-  Standards:** Testing frameworks, coverage expectations, test patterns - **Deployment Patterns:** Environment configurations, build
-  processes - **Integration Patterns:** External service integrations, data flows <action>Extract any story-specific requirements that the
-  developer MUST follow</action>
-  <action>Identify any architectural decisions that override previous patterns</action>
+  <!-- Cross-reference heading indexes against story requirements -->
+  <action>Review the heading indexes produced by SECTION_INDEX discovery:
+    - {architecture_index}: headings + line numbers from architecture file(s)
+    - {prd_index}: headings + line numbers from PRD file(s)
+    - {ux_index}: headings + line numbers from UX file(s) (may be empty)
+    - {domain_research_index}: headings + line numbers from domain research file(s) (may be empty)
+    - {market_research_index}: headings + line numbers from market research file(s) (may be empty)
+  </action>
+  <action>Using the story requirements, acceptance criteria, and technical context extracted from {epics_content}, evaluate each section heading in each index and select only the sections that are directly relevant to implementing THIS story</action>
+  <action>Compile {referenced_sections}: for each planning document, produce a list of relevant entries in the format:
+      `<relative_file_path> @ line <N> — <heading_text> — <one-line reason why relevant to this story>`
+    Relative paths must be from the project root (e.g., `_bmad-output/planning-artifacts/architecture/.../ARCHITECTURE-SPINE.md`).
+    Omit any document with zero relevant sections.
+    Omit any section that covers unrelated features, other epics, or infrastructure not touched by this story.
+  </action>
+  <note>Body content of these files is NOT in context. The heading index (grep output) is sufficient to identify relevant sections. The dev agent will read only the identified sections during implementation.</note>
 
   <!-- Read existing code being modified — non-negotiable -->
   <critical>📂 READ FILES BEING MODIFIED — skipping this is the primary cause of implementation failures and review cycles</critical>
-  <action>From the architecture directory structure, identify every file marked UPDATE (not NEW) that this story will touch</action>
+  <action>From {epics_content}, identify every source file marked UPDATE (not NEW) that this story will touch</action>
   <action>Read each relevant UPDATE file completely. For each one, document in dev notes:
     - Current state: what it does today (state machine, API calls, data shapes, existing behaviors)
     - What this story changes: the specific sections or behaviors being modified
@@ -383,6 +385,14 @@ Activation is complete. If `activation_steps_prepend` or `activation_steps_appen
   <!-- Project context reference -->
   <template-output
     file="{default_output_file}">project_context_reference</template-output>
+
+  <!-- Referenced planning artifacts — specific sections with line numbers, not full files -->
+  <action>Populate the "Referenced Planning Artifacts" section in the story file using {referenced_sections}. For each planning document that has relevant sections, output a group with:
+    - The document name and relative file path as a header
+    - A bullet per relevant section: `Line <N> \`<heading_text>\` — <reason relevant to this story>`
+    Group by document (Architecture, PRD, UX, Domain Research, Market Research). Omit any document group with no relevant sections.
+  </action>
+  <template-output file="{default_output_file}">referenced_documents_section</template-output>
 
   <!-- Final status update -->
   <template-output file="{default_output_file}">
